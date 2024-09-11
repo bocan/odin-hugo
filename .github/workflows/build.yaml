@@ -44,10 +44,10 @@ jobs:
           sbom: true
           provenance: mode=max
           push: true
-          tags:
-            - ${{ env.DOCKER_IMAGE_NAME }}:latest
-            - ${{ env.DOCKER_IMAGE_NAME }}:0.134
-            - ${{ env.DOCKER_IMAGE_NAME }}:0.134.2
+          tags: |
+            ${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ env.DOCKER_IMAGE_NAME }}:0.134
+            ${{ env.DOCKER_IMAGE_NAME }}:0.134.2
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
           cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
         env:
