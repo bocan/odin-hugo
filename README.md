@@ -35,7 +35,7 @@ Hugo is available in two editions: standard and extended. With the extended edit
 * Encode to the WebP format when processing images. You can decode WebP images with either edition.
 * Transpile Sass to CSS using the embedded LibSass transpiler. The extended edition is not required to use the Dart Sass transpiler.
 
-I've based this Docker build from the work of @jakejarvis and his [Dockerfile](https://github.com/jakejarvis/hugo-docker).  The final Alpine Linux container includes a few small third-party tools that are required by certain optional Hugo features:
+I've based this Docker build from the work of [@jakejarvis](https://github.com/jakejarvis) and his [Dockerfile](https://github.com/jakejarvis/hugo-docker).  The final Alpine Linux container includes a few small third-party tools that are required by certain optional Hugo features:
 
 * PostCSS
 * Autoprefixer

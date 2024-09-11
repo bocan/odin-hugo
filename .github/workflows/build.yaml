@@ -40,3 +40,10 @@ jobs:
           tags: bocan/odin-hugo:latest
         env:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
+
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: bocan/odin-hugo
