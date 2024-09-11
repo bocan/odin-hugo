@@ -21,3 +21,17 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: bocan/odin-hugo
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          sbom: true
+          provenance: mode=max
+          push: true
+          tags: bocan/odin-hugo:latest
