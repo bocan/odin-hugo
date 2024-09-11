@@ -2,6 +2,8 @@
 
 This is a Dockerfile and a Github Action used to build a custom docker image of [Hugo](https://gohugo.io/) Extended for my purely Docker powered web stack.
 
+The built images (for AMD64 and ARM64) are here: [https://hub.docker.com/r/bocan/odin-hugo](https://hub.docker.com/r/bocan/odin-hugo).
+
 # Hugo Overview
 
 Hugo is a [static site generator](https://en.wikipedia.org/wiki/Static_site_generator) written in [Go](https://go.dev/), optimized for speed and designed for flexibility. With its advanced templating system and fast asset pipelines, Hugo renders a complete site in seconds, often less.
