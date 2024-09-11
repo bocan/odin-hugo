@@ -1,6 +1,6 @@
 # About
 
-This is a Dockerfile and a Github Action used to build a custom docker image of [Hugo](https://gohugo.io/) Extended for my purely Docker powered web stack. 
+This is a Dockerfile and a Github Action used to build a custom docker image of [Hugo](https://gohugo.io/) Extended for my purely Docker powered web stack.
 
 # Hugo Overview
 
@@ -45,4 +45,3 @@ I've based this Docker build from the work of [@jakejarvis](https://github.com/j
 * Pandoc
 * Docutils / RST
 * Embedded Dart Sass (amd64 only)
-

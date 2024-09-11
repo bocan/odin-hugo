@@ -1,7 +1,13 @@
 name: ci
 
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - 'main'
+
+env:
+  DOCKER_IMAGE_NAME: bocan/odin-hugo
 
 jobs:
   docker:
@@ -12,7 +18,7 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -29,15 +35,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: bocan/odin-hugo
+          images: ${{ .env.DOCKER_IMAGE_NAME }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64,linux/arm64
           sbom: true
           provenance: mode=max
           push: true
-          tags: bocan/odin-hugo:latest
+          tags: ${{ .env.DOCKER_IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ .env.DOCKER_IMAGE_NAME }}:build-cache
+          cache-to: type=registry,ref=${{ .env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
         env:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
 
@@ -46,4 +55,4 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: bocan/odin-hugo
+          repository: ${{ .env.DOCKER_IMAGE_NAME }}
