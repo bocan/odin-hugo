@@ -35,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ .env.DOCKER_IMAGE_NAME }}
+          images: ${{ env.DOCKER_IMAGE_NAME }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -44,9 +44,9 @@ jobs:
           sbom: true
           provenance: mode=max
           push: true
-          tags: ${{ .env.DOCKER_IMAGE_NAME }}:latest
-          cache-from: type=registry,ref=${{ .env.DOCKER_IMAGE_NAME }}:build-cache
-          cache-to: type=registry,ref=${{ .env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
+          cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
         env:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
 
@@ -55,4 +55,4 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ .env.DOCKER_IMAGE_NAME }}
+          repository: ${{ env.DOCKER_IMAGE_NAME }}
