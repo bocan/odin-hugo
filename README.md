@@ -2,7 +2,8 @@
 
 This is a Dockerfile and a Github Action used to build a custom docker image of [Hugo](https://gohugo.io/) Extended for my purely Docker powered web stack.
 
-The built images (for AMD64 and ARM64) are here: [https://hub.docker.com/r/bocan/odin-hugo](https://hub.docker.com/r/bocan/odin-hugo).
+* The source is here: [https://github.com/bocan/odin-hugo](https://github.com/bocan/odin-hugo).
+* The built images (for AMD64 and ARM64) are here: [https://hub.docker.com/r/bocan/odin-hugo](https://hub.docker.com/r/bocan/odin-hugo).
 
 # Hugo Overview
 
