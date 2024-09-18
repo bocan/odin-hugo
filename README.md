@@ -1,3 +1,5 @@
+[![ci](https://github.com/bocan/odin-hugo/actions/workflows/build.yaml/badge.svg)](https://github.com/bocan/odin-hugo/actions/workflows/build.yaml)
+
 # About
 
 This is a Dockerfile and a Github Action used to build a custom docker image of [Hugo](https://gohugo.io/) Extended for my purely Docker powered web stack.
