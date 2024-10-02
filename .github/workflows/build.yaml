@@ -40,14 +40,15 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          #platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           sbom: true
           provenance: mode=max
           push: true
           tags: |
             ${{ env.DOCKER_IMAGE_NAME }}:latest
-            ${{ env.DOCKER_IMAGE_NAME }}:0.134
-            ${{ env.DOCKER_IMAGE_NAME }}:0.134.2
+            ${{ env.DOCKER_IMAGE_NAME }}:0.135
+            ${{ env.DOCKER_IMAGE_NAME }}:0.135.0
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
           cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
         env:
