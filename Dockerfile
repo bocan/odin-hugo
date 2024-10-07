@@ -56,18 +56,18 @@ FROM alpine:3.20
 ARG HUGO_VERSION
 # https://github.com/jgm/pandoc/releases
 # renovate: datasource=github-releases depName=jgm/pandoc
-ARG PANDOC_VERSION=3.4
+ARG PANDOC_VERSION=3.5
 # https://github.com/sass/dart-sass-embedded/releases
 # renovate: datasource=github-releases depName=sass/dart-sass-embedded
 ARG DART_SASS_VERSION=1.62.1
 
 LABEL version="${HUGO_VERSION}"
-LABEL repository="https://github.com/jakejarvis/hugo-docker"
-LABEL homepage="https://jarv.is/"
-LABEL maintainer="Jake Jarvis <jake@jarv.is>"
+LABEL repository="https://github.com/bocan/odin-hugo"
+LABEL homepage="https://chris.funderburg.me/"
+LABEL maintainer="Chris Funderburg <chris@funderburg.me>"
 
 # https://docs.github.com/en/free-pro-team@latest/packages/managing-container-images-with-github-container-registry/connecting-a-repository-to-a-container-image#connecting-a-repository-to-a-container-image-on-the-command-line
-LABEL org.opencontainers.image.source="https://github.com/jakejarvis/hugo-docker"
+LABEL org.opencontainers.image.source="https://github.com/bocan/odin-hugo"
 
 # bring over patched binary from build stage
 COPY --from=build /go/bin/hugo /usr/bin/hugo
