@@ -1,7 +1,7 @@
 # the following version can be overridden at image build time with --build-arg
 # renovate: datasource=github-releases depName=gohugoio/hugo
 # https://github.com/gohugoio/hugo
-ARG HUGO_VERSION=0.142.0
+ARG HUGO_VERSION=0.145.0
 
 # remove/comment the following line completely to compile vanilla Hugo:
 ARG HUGO_BUILD_TAGS=extended
@@ -10,7 +10,7 @@ ARG HUGO_BUILD_TAGS=extended
 
 # Hugo >= v0.81.0 requires Go 1.16+ to build
 # https://hub.docker.com/_/golang/
-FROM golang:1.23-alpine AS build
+FROM golang:1.24-alpine AS build
 
 # renew global args from above
 # https://docs.docker.com/engine/reference/builder/#scope
@@ -56,7 +56,7 @@ FROM alpine:3.21
 ARG HUGO_VERSION
 # https://github.com/jgm/pandoc/releases
 # renovate: datasource=github-releases depName=jgm/pandoc
-ARG PANDOC_VERSION=3.6.2
+ARG PANDOC_VERSION=3.6.3
 # https://github.com/sass/dart-sass-embedded/releases
 # renovate: datasource=github-releases depName=sass/dart-sass-embedded
 ARG DART_SASS_VERSION=1.62.1
