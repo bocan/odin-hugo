@@ -5,8 +5,9 @@
   ],
   "automerge": false,
   "platformAutomerge": false,
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "fileMatch": [
         "^Dockerfile$"
       ],
@@ -18,7 +19,7 @@
   ],
   "packageRules": [
     {
-      "matchFiles": [
+      "matchFileNames": [
         "^Dockerfile$"
       ],
       "extractVersion": "^v(?<version>.*)$"
