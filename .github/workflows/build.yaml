@@ -73,17 +73,12 @@ jobs:
           cosign sign --yes "${IMAGE_REF}"
 
       # ---- SBOM (attestation) signing flow ----
-      - name: Download SBOM attestation produced by Buildx
-        run: |
-          # If multi-arch, you can loop over --platform to pull per-arch SBOMs.
-          cosign download sbom "${IMAGE_REF}" > sbom.spdx.json
-
-      - name: Cosign attest SBOM (signed in-toto attestation)
+      - name: Download and attest SBOM attestation produced by Buildx
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: |
-          # --type can be spdx or cyclonedx depending on what your builder emits.
-          cosign attest --yes --type spdx --predicate sbom.spdx.json "${IMAGE_REF}"
+          cosign download sbom --platform linux/amd64 "${IMAGE_REF}" > "sbom-amd64.spdx.json"
+          cosign attest --yes --type spdx --predicate "sbom-$p.spdx.json" "${IMAGE_REF}"
 
       # (Optional) quick verification examples
       - name: Verify signatures (image)
