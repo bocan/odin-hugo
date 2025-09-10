@@ -29,16 +29,16 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      # 1) Sanity check that we actually have both values (prints lengths only)
-      - name: Preconditions — Harbor creds present
+      - name: Token endpoint sanity check (same creds)
         env:
-          HARBOR_USER: ${{ secrets.HARBOR_USERNAME }}     # move username to a secret
-          HARBOR_PASS: ${{ secrets.HARBOR_PASSWORD }}     # your Harbor password (or robot token)
+          U: ${{ secrets.HARBOR_USERNAME }}
+          P: ${{ secrets.HARBOR_PASSWORD }}
         run: |
-          set -e
-          echo -n "USER_LEN="; printf %s "${HARBOR_USER}" | wc -c
-          echo -n "PASS_LEN="; printf %s "${HARBOR_PASS}" | wc -c
-          test -n "${HARBOR_USER}" && test -n "${HARBOR_PASS}"
+          set -euxo pipefail
+          curl -sS -u "$U:$P" -D - \
+            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull,push" \
+            -o /tmp/token.json
+          head -c 200 /tmp/token.json | sed 's/./*/g' && echo
 
       # 2) Explicit docker CLI login (works the same as the action, but clearer errors)
       - name: Docker CLI login to Harbor
