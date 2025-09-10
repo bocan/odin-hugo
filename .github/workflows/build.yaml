@@ -48,7 +48,7 @@ jobs:
           P: ${{ secrets.HARBOR_PASSWORD }}
         run: |
           set -euxo pipefail
-          printf %s "$P" | docker login "$REG" -u "$U" --password-stdin
+          printf %s "$P" | docker --debug login "$REG" -u "$U" --password-stdin
 
       - name: Probe Harbor /v2/ from runner
         env:
