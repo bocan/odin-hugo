@@ -29,16 +29,19 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      - name: Check A/AAAA & probes
-        run: |
-          getent ahosts registry.cloudcauldron.io || true
-          echo "IPv4 token probe:"; curl -4 -sS -u "${U}:${P}" -D - -o /dev/null \
-            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull" || true
-          echo "IPv6 token probe:"; curl -6 -sS -u "${U}:${P}" -D - -o /dev/null \
-            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull" || true
+      - name: Write Docker config.json for Harbor
         env:
+          REG: registry.cloudcauldron.io
           U: ${{ secrets.HARBOR_USERNAME }}
           P: ${{ secrets.HARBOR_PASSWORD }}
+        run: |
+          set -e
+          mkdir -p "$HOME/.docker"
+          auth=$(printf '%s' "$U:$P" | base64 -w0 2>/dev/null || printf '%s' "$U:$P" | base64)
+          cat > "$HOME/.docker/config.json" <<EOF
+          { "auths": { "$REG": { "auth": "$auth" } } }
+          EOF
+          jq . "$HOME/.docker/config.json"
 
       # 2) Explicit docker CLI login (works the same as the action, but clearer errors)
       - name: Docker CLI login to Harbor
