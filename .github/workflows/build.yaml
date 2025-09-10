@@ -59,7 +59,6 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_IMAGE_NAME }}:latest
-            ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
           cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
@@ -93,14 +92,20 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         run: cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${IMAGE_REF}"
 
-      # (Optional) quick verification examples
-      - name: Verify signatures (image)
+      - name: Verify image signature
         run: |
-          cosign verify "${IMAGE_REF}"
+          cosign verify \
+            --certificate-identity-regexp "https://github.com/${{ github.repository }}/.github/workflows/.*@${{ github.ref }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${IMAGE_REF}"
 
       - name: Verify SBOM attestation signature
         run: |
-          cosign verify-attestation --type spdx "${IMAGE_REF}"
+          cosign verify-attestation \
+            --type spdx \
+            --certificate-identity-regexp "https://github.com/${{ github.repository }}/.github/workflows/.*@${{ github.ref }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "${IMAGE_REF}"
 
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v4
