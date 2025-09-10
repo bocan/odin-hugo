@@ -1,4 +1,4 @@
-894121584238.dkr.ecr.eu-west-1.amazonaws.comname: ci
+name: ci
 
 on:
   workflow_dispatch:
