@@ -8,6 +8,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: bocan/hugo
+  ECR_IMAGE_NAME: 894121584238.dkr.ecr.eu-west-1.amazonaws.com/funderburg/odin-hugo
 
 permissions:
   contents: read
@@ -59,6 +60,7 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ env.ECR_IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
           cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
@@ -69,20 +71,25 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
-      - name: Set IMAGE digest ref
-        run: echo "IMAGE_REF=${{ env.DOCKER_IMAGE_NAME }}@${{ steps.build.outputs.digest }}" >> $GITHUB_ENV
+      - name: Set digest refs for both registries
+        run: |
+          echo "DIGEST=${{ steps.build.outputs.digest }}" >> $GITHUB_ENV
+          echo "DH_REF=docker.io/${{ env.DOCKER_IMAGE_NAME }}@${{ steps.build.outputs.digest }}" >> $GITHUB_ENV
+          echo "HB_REF=${{ env.ECR_IMAGE_NAME }}@${{ steps.build.outputs.digest }}" >> $GITHUB_ENV
+
 
       - name: Cosign sign image (keyless)
         env:
           COSIGN_EXPERIMENTAL: "true"   # enable keyless
         run: |
-          cosign sign --yes "${IMAGE_REF}"
+          cosign sign --yes "${DH_REF}"
+          cosign sign --yes "${HB_REF}"
 
       # ---- Generate & attest a signed SBOM (SPDX JSON) ----
       - name: Generate SBOM (SPDX JSON) for linux/amd64
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ env.IMAGE_REF }}
+          image: ${{ env.DH_REF }}
           platform: linux/amd64
           format: spdx-json
           output-file: sbom-amd64.spdx.json
@@ -90,7 +97,10 @@ jobs:
       - name: Cosign attest SBOM (in-toto)
         env:
           COSIGN_EXPERIMENTAL: "true"
-        run: cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${IMAGE_REF}"
+        run: |
+          cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${DH_REF}"
+          cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${HB_REF}"
+
 
       - name: Verify image signature
         run: |
