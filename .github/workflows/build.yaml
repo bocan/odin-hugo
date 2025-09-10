@@ -31,7 +31,7 @@ jobs:
 
       - name: Probe Harbor /v2/ from runner
         env:
-          HARBOR_USER: ${{ secrets.HARBOR_USERNAME }}
+          HARBOR_USER: ${{ vars.HARBOR_USERNAME }}
           HARBOR_PASS: ${{ secrets.HARBOR_TOKEN }}
         run: |
           set -euxo pipefail
