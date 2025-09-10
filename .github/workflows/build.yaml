@@ -37,6 +37,8 @@ jobs:
           set -euo pipefail
           printf 'USERNAME len=%s bytes\n' "${#U}"
           printf 'PASSWORD len=%s bytes\n' "${#P}"
+          printf 'USERNAME hex='; printf '%s' "$U" | xxd -p; echo
+          printf 'PASSWORD hex='; printf '%s' "$P" | xxd -p; echo
           printf 'USERNAME b64=';  printf '%s' "$U" | base64; echo
           printf 'PASSWORD b64=';  printf '%s' "$P" | base64; echo
 
