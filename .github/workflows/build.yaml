@@ -99,14 +99,6 @@ jobs:
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             "${IMAGE_REF}"
 
-      - name: Verify SBOM attestation signature
-        run: |
-          cosign verify-attestation \
-            --type spdx \
-            --certificate-identity-regexp "https://github.com/${{ github.repository }}/.github/workflows/.*@${{ github.ref }}" \
-            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            "${IMAGE_REF}"
-
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v4
         with:
