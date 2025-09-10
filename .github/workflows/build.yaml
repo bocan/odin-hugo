@@ -35,6 +35,13 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to Cloud Cauldron Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: registry.cloudcauldron.io
+          username: ${{ vars.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_TOKEN }}
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -52,8 +59,8 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_IMAGE_NAME }}:latest
-            ${{ env.DOCKER_IMAGE_NAME }}:0.135
-            ${{ env.DOCKER_IMAGE_NAME }}:0.135.0
+            ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache
           cache-to: type=registry,ref=${{ env.DOCKER_IMAGE_NAME }}:build-cache,mode=max
         env:
@@ -72,13 +79,19 @@ jobs:
         run: |
           cosign sign --yes "${IMAGE_REF}"
 
-      # ---- SBOM (attestation) signing flow ----
-      - name: Download and attest SBOM attestation produced by Buildx
+      # ---- Generate & attest a signed SBOM (SPDX JSON) ----
+      - name: Generate SBOM (SPDX JSON) for linux/amd64
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.IMAGE_REF }}
+          platform: linux/amd64
+          format: spdx-json
+          output-file: sbom-amd64.spdx.json
+
+      - name: Cosign attest SBOM (in-toto)
         env:
           COSIGN_EXPERIMENTAL: "true"
-        run: |
-          cosign download sbom --platform linux/amd64 "${IMAGE_REF}" > "sbom-amd64.spdx.json"
-          cosign attest --yes --type spdx --predicate "sbom-$p.spdx.json" "${IMAGE_REF}"
+        run: cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${IMAGE_REF}"
 
       # (Optional) quick verification examples
       - name: Verify signatures (image)
