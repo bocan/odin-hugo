@@ -29,11 +29,10 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      - name: Login to Cloud Cauldron Harbor
+      - name: Login to Cloud Cauldron ECR
         uses: docker/login-action@v3
         with:
-          registry: registry.cloudcauldron.io
-          ecr: false
+          registry: 894121584238.dkr.ecr.eu-west-1.amazonaws.com
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}
 
