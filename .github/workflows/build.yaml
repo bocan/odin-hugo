@@ -35,12 +35,12 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Login to Cloud Cauldron Harbor
-        uses: docker/login-action@v3
-        with:
-          registry: registry.cloudcauldron.io
-          username: ${{ vars.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_TOKEN }}
+#      - name: Login to Cloud Cauldron Harbor
+#        uses: docker/login-action@v3
+#        with:
+#          registry: registry.cloudcauldron.io
+#          username: ${{ vars.HARBOR_USERNAME }}
+#          password: ${{ secrets.HARBOR_TOKEN }}
 
       - name: Extract metadata
         id: meta
