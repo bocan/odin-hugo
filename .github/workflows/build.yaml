@@ -29,16 +29,16 @@ jobs:
       - name: Get Git commit timestamps
         run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
-      - name: Token endpoint sanity check (same creds)
+      - name: Check A/AAAA & probes
+        run: |
+          getent ahosts registry.cloudcauldron.io || true
+          echo "IPv4 token probe:"; curl -4 -sS -u "${U}:${P}" -D - -o /dev/null \
+            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull" || true
+          echo "IPv6 token probe:"; curl -6 -sS -u "${U}:${P}" -D - -o /dev/null \
+            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull" || true
         env:
           U: ${{ secrets.HARBOR_USERNAME }}
           P: ${{ secrets.HARBOR_PASSWORD }}
-        run: |
-          set -euxo pipefail
-          curl -sS -u "$U:$P" -D - \
-            "https://registry.cloudcauldron.io/service/token?service=harbor-registry&scope=repository:bocan/hugo:pull,push" \
-            -o /tmp/token.json
-          head -c 200 /tmp/token.json | sed 's/./*/g' && echo
 
       # 2) Explicit docker CLI login (works the same as the action, but clearer errors)
       - name: Docker CLI login to Harbor
