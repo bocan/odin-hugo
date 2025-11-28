@@ -56,7 +56,7 @@ FROM alpine:3.22
 ARG HUGO_VERSION
 # https://github.com/jgm/pandoc/releases
 # renovate: datasource=github-releases depName=jgm/pandoc
-ARG PANDOC_VERSION=3.8.2
+ARG PANDOC_VERSION=3.8.2.1
 # https://github.com/sass/dart-sass-embedded/releases
 # renovate: datasource=github-releases depName=sass/dart-sass-embedded
 ARG DART_SASS_VERSION=1.62.1
