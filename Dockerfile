@@ -50,7 +50,7 @@ RUN go install github.com/yaegashi/muslstack@latest && \
 # ---
 
 # https://hub.docker.com/_/alpine
-FROM alpine:3.22
+FROM alpine:3.23
 
 # renew global args from above & pin any dependency versions
 ARG HUGO_VERSION
