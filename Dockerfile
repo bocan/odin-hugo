@@ -59,7 +59,7 @@ ARG HUGO_VERSION
 ARG PANDOC_VERSION=3.8.3
 # https://github.com/sass/dart-sass/releases
 # renovate: datasource=github-releases depName=sass/dart-sass
-ARG DART_SASS_VERSION=1.97.1
+ARG DART_SASS_VERSION=1.97.2
 
 LABEL version="${HUGO_VERSION}"
 LABEL repository="https://github.com/bocan/odin-hugo"
