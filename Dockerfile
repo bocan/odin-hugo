@@ -1,7 +1,7 @@
 # the following version can be overridden at image build time with --build-arg
 # https://github.com/gohugoio/hugo
 # renovate: datasource=github-releases depName=gohugoio/hugo
-ARG HUGO_VERSION=0.160.1
+ARG HUGO_VERSION=0.163.0
 
 # remove/comment the following line completely to compile vanilla Hugo:
 ARG HUGO_BUILD_TAGS=extended
@@ -50,7 +50,7 @@ RUN go install github.com/yaegashi/muslstack@latest && \
 # ---
 
 # https://hub.docker.com/_/alpine
-FROM alpine:3.23
+FROM alpine:3.24
 
 # renew global args from above & pin any dependency versions
 ARG HUGO_VERSION
@@ -59,7 +59,7 @@ ARG HUGO_VERSION
 ARG PANDOC_VERSION=3.8.3
 # https://github.com/sass/dart-sass/releases
 # renovate: datasource=github-releases depName=sass/dart-sass
-ARG DART_SASS_VERSION=1.99.0
+ARG DART_SASS_VERSION=1.100.0
 
 LABEL version="${HUGO_VERSION}"
 LABEL repository="https://github.com/bocan/odin-hugo"
