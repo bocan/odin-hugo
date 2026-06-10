@@ -79,8 +79,6 @@ jobs:
 
 
       - name: Cosign sign image (keyless)
-        env:
-          COSIGN_EXPERIMENTAL: "true"   # enable keyless
         run: |
           cosign sign --yes "${DH_REF}"
           cosign sign --yes "${HB_REF}"
@@ -95,12 +93,9 @@ jobs:
           output-file: sbom-amd64.spdx.json
 
       - name: Cosign attest SBOM (in-toto)
-        env:
-          COSIGN_EXPERIMENTAL: "true"
         run: |
-          cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${DH_REF}"
-          cosign attest --yes --type spdx --predicate sbom-amd64.spdx.json "${HB_REF}"
-
+          cosign attest --yes --type spdxjson --predicate sbom-amd64.spdx.json "${DH_REF}"
+          cosign attest --yes --type spdxjson --predicate sbom-amd64.spdx.json "${HB_REF}"
 
       - name: Verify image signature
         run: |

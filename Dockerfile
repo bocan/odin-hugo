@@ -3,32 +3,21 @@
 # renovate: datasource=github-releases depName=gohugoio/hugo
 ARG HUGO_VERSION=0.163.0
 
-# remove/comment the following line completely to compile vanilla Hugo:
-ARG HUGO_BUILD_TAGS=extended
-
 # ---
 
-# Hugo >= v0.81.0 requires Go 1.16+ to build
 # https://hub.docker.com/_/golang/
 FROM golang:1.26-alpine AS build
 
 # renew global args from above
 # https://docs.docker.com/engine/reference/builder/#scope
 ARG HUGO_VERSION
-ARG HUGO_BUILD_TAGS
 
-ARG CGO=1
-ENV CGO_ENABLED=${CGO}
-ENV GOOS=linux
-ENV GO111MODULE=on
+# vanilla (non-extended) Hugo is pure Go: build a fully static binary
+ENV CGO_ENABLED=0
 
-WORKDIR /go/src/github.com/gohugoio/hugo
+WORKDIR /src/hugo
 
-# gcc/g++ are required to build SASS libraries for extended version
 RUN apk upgrade --update --no-cache && apk add --update --no-cache \
-  gcc \
-  g++ \
-  musl-dev \
   git
 
 # clone source from Git repo:
@@ -39,27 +28,16 @@ RUN git clone \
   https://github.com/gohugoio/hugo.git ./
 
 # https://github.com/gohugoio/hugo/commit/241481931f5f5f2803cd4be519936b26d8648dfd
-RUN go build -v -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=docker" -tags "$HUGO_BUILD_TAGS" && \
+RUN go build -v -ldflags "-X github.com/gohugoio/hugo/common/hugo.vendorInfo=docker" && \
   mv ./hugo /go/bin/hugo
-
-# fix potential stack size problems on Alpine
-# https://github.com/microsoft/vscode-dev-containers/blob/fb63f7e016877e13535d4116b458d8f28012e87f/containers/hugo/.devcontainer/Dockerfile#L19
-RUN go install github.com/yaegashi/muslstack@latest && \
-  muslstack -s 0x800000 /go/bin/hugo
 
 # ---
 
 # https://hub.docker.com/_/alpine
 FROM alpine:3.24
 
-# renew global args from above & pin any dependency versions
+# renew global args from above
 ARG HUGO_VERSION
-# https://github.com/jgm/pandoc/releases
-# renovate: datasource=github-releases depName=jgm/pandoc
-ARG PANDOC_VERSION=3.8.3
-# https://github.com/sass/dart-sass/releases
-# renovate: datasource=github-releases depName=sass/dart-sass
-ARG DART_SASS_VERSION=1.100.0
 
 LABEL version="${HUGO_VERSION}"
 LABEL repository="https://github.com/bocan/odin-hugo"
@@ -74,76 +52,19 @@ COPY --from=build /go/bin/hugo /usr/bin/hugo
 
 # this step is intentionally a bit of a mess to minimize the number of layers in the final image
 RUN set -euo pipefail && \
-  if [ "$(uname -m)" = "x86_64" ]; then \
-  ARCH="amd64"; \
-  elif [ "$(uname -m)" = "aarch64" ]; then \
-  ARCH="arm64"; \
-  else \
-  echo "Unknown build architecture, quitting." && exit 2; \
-  fi && \
   # alpine packages
-  # libc6-compat & libstdc++ are required for extended SASS libraries
   # ca-certificates are required to fetch outside resources (like Twitter oEmbeds)
   apk upgrade --update --no-cache && apk add --update --no-cache \
   ca-certificates \
   tzdata \
-  git \
-  nodejs \
-  npm \
-  go \
-  python3 \
-  py3-pip \
-  ruby \
-  libc6-compat \
-  libstdc++ && \
+  git && \
   update-ca-certificates && \
-  # npm packages
-  npm install --global --production \
-  yarn \
-  postcss \
-  postcss-cli \
-  autoprefixer \
-  @babel/core \
-  @babel/cli && \
-  npm cache clean --force && \
-  # ruby gems
-  gem install asciidoctor && \
-  # python packages
-  python3 -m pip install --no-cache-dir --break-system-packages  --upgrade Pygments==2.* docutils rst2html && \
-  # manually fetch pandoc binary
-  wget -O pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-${ARCH}.tar.gz && \
-  tar xf pandoc.tar.gz && \
-  mv ./pandoc-${PANDOC_VERSION}/bin/pandoc /usr/bin/ && \
-  chmod +x /usr/bin/pandoc && \
-  rm -rf pandoc.tar.gz pandoc-${PANDOC_VERSION} && \
-  # manually fetch Dart Sass binary (musl builds for Alpine)
-  if [ "$ARCH" = "amd64" ]; then \
-  SASS_ARCH="x64"; \
-  elif [ "$ARCH" = "arm64" ]; then \
-  SASS_ARCH="arm64"; \
-  fi && \
-  wget -O dart-sass.tar.gz https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-${SASS_ARCH}-musl.tar.gz && \
-  tar xf dart-sass.tar.gz && \
-  mv ./dart-sass/sass /usr/bin/ && \
-  chmod +x /usr/bin/sass && \
-  rm -rf dart-sass.tar.gz dart-sass && \
   # clean up some junk
   rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
   # tell git to trust /src
   git config --global --add safe.directory /src && \
   # make super duper sure that everything went OK, exit otherwise
-  hugo env && \
-  go version && \
-  node --version && \
-  npm --version && \
-  yarn --version && \
-  postcss --version && \
-  autoprefixer --version && \
-  babel --version && \
-  pygmentize -V && \
-  asciidoctor --version && \
-  pandoc --version && \
-  rst2html --version
+  hugo env
 
 # add site source as volume
 VOLUME /src
