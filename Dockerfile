@@ -6,7 +6,7 @@ ARG HUGO_VERSION=0.163.3
 # ---
 
 # https://hub.docker.com/_/golang/
-FROM golang:1.26-alpine AS build
+FROM golang:1.27-alpine AS build
 
 # renew global args from above
 # https://docs.docker.com/engine/reference/builder/#scope
