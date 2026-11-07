@@ -3,6 +3,7 @@
 // numbered tips from the cheat sheet in this article: https://www.augmentedmind.de/2023/07/30/renovate-bot-cheat-sheet/
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "reviewers": ["bocan"],
   "extends": [
     "config:recommended"
   ],
